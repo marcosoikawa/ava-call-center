@@ -77,6 +77,17 @@
       100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
     }
 
+    body.ringing .avatar {
+      animation: ring-pulse 1s ease-out infinite;
+    }
+
+    @keyframes ring-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.55); transform: scale(1); }
+      50%  { transform: scale(1.06); }
+      70%  { box-shadow: 0 0 0 20px rgba(124, 58, 237, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); transform: scale(1); }
+    }
+
     h1 {
       font-size: 1.9rem;
       margin: 0 0 0.6rem;
@@ -410,6 +421,50 @@
       if (workletNode) workletNode.port.postMessage({ clear: true });
     }
 
+    // ----- Phone ringback tone -----------------------------------------
+    // Plays a single "ring" (like calling a number) and resolves when the
+    // attendant "answers". Synthesized with the Web Audio API — no asset needed.
+    function playRingback() {
+      return new Promise(async (resolve) => {
+        try {
+          if (audioContext.state === 'suspended') await audioContext.resume();
+        } catch (_) { /* ignore */ }
+
+        const ringDuration = 1.6; // one ring
+        const now = audioContext.currentTime;
+
+        const gain = audioContext.createGain();
+        gain.connect(audioContext.destination);
+        gain.gain.setValueAtTime(0.0001, now);
+
+        // Classic telephone ringback = 440 Hz + 480 Hz tones
+        const o1 = audioContext.createOscillator();
+        const o2 = audioContext.createOscillator();
+        o1.type = 'sine';
+        o2.type = 'sine';
+        o1.frequency.value = 440;
+        o2.frequency.value = 480;
+        o1.connect(gain);
+        o2.connect(gain);
+
+        // Envelope: quick fade-in, hold, fade-out (sounds like one ring burst)
+        gain.gain.exponentialRampToValueAtTime(0.16, now + 0.06);
+        gain.gain.setValueAtTime(0.16, now + ringDuration - 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + ringDuration);
+
+        o1.start(now);
+        o2.start(now);
+        o1.stop(now + ringDuration);
+        o2.stop(now + ringDuration);
+
+        let done = false;
+        const finish = () => { if (!done) { done = true; resolve(); } };
+        o2.onended = finish;
+        // Safety fallback in case onended doesn't fire
+        setTimeout(finish, (ringDuration + 0.15) * 1000);
+      });
+    }
+
     function float32ToInt16(float32Array) {
       const int16 = new Int16Array(float32Array.length);
       for (let i = 0; i < float32Array.length; i++) {
@@ -458,7 +513,25 @@
       socket.close();
     }
 
-    function startStreaming() {
+    // User clicked "Falar com a AVA": ring once, then the attendant answers.
+    async function startStreaming() {
+      const startBtn = document.getElementById("startBtn");
+      startBtn.disabled = true;
+      setLive(false, "Chamando…");
+      document.body.classList.add("ringing");
+
+      try {
+        await playRingback();
+      } catch (e) {
+        console.warn("Ringback failed:", e);
+      }
+
+      document.body.classList.remove("ringing");
+      setLive(false, "Conectando…");
+      connectCall();
+    }
+
+    function connectCall() {
       let wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
       let wsHost = window.location.host; 
       socket = new WebSocket(`${wsProtocol}://${wsHost}/web/ws`);
