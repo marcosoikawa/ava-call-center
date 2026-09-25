@@ -6,7 +6,7 @@ targetScope = 'subscription'
 param environmentName string
 
 @minLength(1)
-@description('Primary location for all resources. Regions with pre-deployed models (gpt-4o-mini): eastus2, japaneast, southeastasia, swedencentral, westus2. Other regions require BYOM. See https://learn.microsoft.com/azure/ai-services/speech-service/regions?tabs=voice-live')
+@description('Primary location for all resources. gpt-realtime is supported in australiaeast, canadaeast, eastus2, francecentral, southeastasia, swedencentral, uksouth, and westus2. See https://learn.microsoft.com/azure/ai-services/speech-service/regions?tabs=voice-live')
 @allowed([
   'australiaeast'
   'brazilsouth'
@@ -33,7 +33,7 @@ param location string
 
 param appExists bool
 @description('The OpenAI model name')
-param modelName string = 'gpt-4o-mini'
+param modelName string = 'gpt-realtime'
 @description('The selected telephony provider')
 @allowed(['acs', 'twilio', 'infobip', 'genesys'])
 param telephonyProvider string = 'acs'

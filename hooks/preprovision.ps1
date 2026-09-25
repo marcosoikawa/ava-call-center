@@ -45,7 +45,8 @@ if ([string]::IsNullOrWhiteSpace($modelName)) {
     Write-Host "https://learn.microsoft.com/azure/ai-services/speech-service/voice-live#supported-models-and-regions" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  Voice Live Pro" -ForegroundColor Magenta
-    Write-Host "    [1]  gpt-realtime        Native audio I/O + Azure TTS (custom voice supported)"
+    Write-Host "    [1]  gpt-realtime        Native audio I/O + Azure TTS (custom voice supported)" -NoNewline
+    Write-Host " (default)" -ForegroundColor Green
     Write-Host "    [2]  gpt-4o              Azure STT + GPT-4o + Azure TTS"
     Write-Host "    [3]  gpt-4.1             Azure STT + GPT-4.1 + Azure TTS"
     Write-Host "    [4]  gpt-5               Azure STT + GPT-5 + Azure TTS"
@@ -53,8 +54,7 @@ if ([string]::IsNullOrWhiteSpace($modelName)) {
     Write-Host ""
     Write-Host "  Voice Live Basic" -ForegroundColor Cyan
     Write-Host "    [6]  gpt-realtime-mini   Native audio I/O + Azure TTS (custom voice supported)"
-    Write-Host "    [7]  gpt-4o-mini         Azure STT + GPT-4o mini + Azure TTS" -NoNewline
-    Write-Host " (default)" -ForegroundColor Green
+    Write-Host "    [7]  gpt-4o-mini         Azure STT + GPT-4o mini + Azure TTS"
     Write-Host "    [8]  gpt-4.1-mini        Azure STT + GPT-4.1 mini + Azure TTS"
     Write-Host "    [9]  gpt-5-mini          Azure STT + GPT-5 mini + Azure TTS"
     Write-Host ""
@@ -65,8 +65,8 @@ if ([string]::IsNullOrWhiteSpace($modelName)) {
     Write-Host ""
     Write-Host "    [13] Custom (BYOM - bring your own model deployment)"
     Write-Host ""
-    $modelChoice = Read-Host "Select model [7]"
-    if ([string]::IsNullOrWhiteSpace($modelChoice)) { $modelChoice = "7" }
+    $modelChoice = Read-Host "Select model [1]"
+    if ([string]::IsNullOrWhiteSpace($modelChoice)) { $modelChoice = "1" }
 
     $modelMap = @{
         "1"  = "gpt-realtime"
@@ -94,8 +94,8 @@ if ([string]::IsNullOrWhiteSpace($modelName)) {
         $modelName = $modelMap[$modelChoice]
     }
     else {
-        Write-Host "Invalid selection, using gpt-4o-mini." -ForegroundColor Yellow
-        $modelName = "gpt-4o-mini"
+        Write-Host "Invalid selection, using gpt-realtime." -ForegroundColor Yellow
+        $modelName = "gpt-realtime"
     }
 
     azd env set AZURE_VOICE_LIVE_MODEL $modelName

@@ -51,7 +51,7 @@ Exemplos:
 | Item | Valor atual | Onde alterar |
 |---|---|---|
 | Instruções da Ava | Prompt em português com fluxo de pedidos, entrega, devolução e crédito | `server/app/handler/voicelive_media_handler.py`, método `_session_config()`, variável `instructions` |
-| Modelo Voice Live | `gpt-4o-mini` — Voice Live Basic | `VOICE_LIVE_MODEL` em `server/.env` para execução local |
+| Modelo Voice Live | `gpt-realtime` — Voice Live Pro | `VOICE_LIVE_MODEL` em `server/.env` para execução local |
 | Modelo usado no Azure | Recebido pela variável `AZURE_VOICE_LIVE_MODEL` e publicado como `VOICE_LIVE_MODEL` | `infra/main.parameters.json` e `infra/modules/containerapp.bicep` |
 | Voz TTS | `pt-BR-ThalitaMultilingualNeural` | `server/app/handler/voicelive_media_handler.py`, propriedade `voice` |
 | Velocidade da voz | `+10%` | Parâmetro `rate` da propriedade `voice` |
@@ -153,7 +153,7 @@ Assim, é possível usar um modelo Voice Live Pro e continuar usando uma `AzureS
 
 ## Como alterar o modelo Voice Live
 
-O modelo atual é `gpt-4o-mini`, da categoria **Voice Live Basic**.
+O modelo atual é `gpt-realtime`, da categoria **Voice Live Pro**. Esse modelo usa entrada e saída de áudio nativas e mantém a voz sintetizada configurada pela aplicação.
 
 Modelos previstos pela configuração deste projeto:
 

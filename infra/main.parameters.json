@@ -12,7 +12,7 @@
       "value": "${SERVICE_APP_RESOURCE_EXISTS=false}"
     },
     "modelName": {
-      "value": "${AZURE_VOICE_LIVE_MODEL=gpt-4o-mini}"
+      "value": "${AZURE_VOICE_LIVE_MODEL=gpt-realtime}"
     },
     "telephonyProvider": {
       "value": "${TELEPHONY_PROVIDER=acs}"
